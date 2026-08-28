@@ -100,10 +100,51 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     Route::get('/cartasresponsiva-pdf/{id}', [CartasResponsivaController::class, 'generatePdf'])->name('cartasresponsiva.pdf');
 
     // ========================================================================
-    // REPORTES DE RED
+    // REPORTES DE RED Y REPORTES GENERALES
     // ========================================================================
 
     Route::view('/reportes-red', 'reportes.red.index')->name('reportes.red');
+
+    // Módulo Reportes Segmentado
+    Route::get('/reportes', function () {
+        return view('admin.reportes.index');
+    })->name('admin.reportes.index');
+
+    Route::get('/reportes/create', function () {
+        return view('admin.reportes.create');
+    })->name('admin.reportes.create');
+
+    Route::get('/reportes/edit/{id?}', function ($id = null) {
+        return view('admin.reportes.edit', ['id' => $id]);
+    })->name('admin.reportes.edit');
+
+    // ========================================================================
+    // CATÁLOGO / MATERIAS
+    // ========================================================================
+
+    Route::get('/catalogo', function () {
+        return view('admin.catalogo.index');
+    })->name('admin.catalogo.index');
+
+    Route::get('/materias', function () {
+        return view('admin.catalogo.index');
+    })->name('materias');
+
+    // ========================================================================
+    // ESTUDIANTES
+    // ========================================================================
+
+    Route::get('/estudiante', function () {
+        return view('admin.estudiante.index');
+    })->name('admin.estudiante.index');
+
+    // ========================================================================
+    // USUARIO (PERFIL / VISTA SEGMENTADA)
+    // ========================================================================
+
+    Route::get('/usuario', function () {
+        return view('admin.usuario.index');
+    })->name('admin.usuario.index');
 });
 
 // Route::middleware([

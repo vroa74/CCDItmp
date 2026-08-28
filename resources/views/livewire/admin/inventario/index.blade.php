@@ -72,14 +72,14 @@
                             </svg>
                             Usuario
                         </button>
-                        <button
+                        <a href="{{ route('inventario.create') }}"
                             class="bg-blue-600 hover:bg-blue-700 text-white px-1 py-0.5 rounded text-xs font-medium flex items-center gap-0.5 transition-colors">
                             <svg class="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 4v16m8-8H4" />
                             </svg>
                             Agregar
-                        </button>
+                        </a>
                         <a href="{{ route('inventario.export.html', ['filters' => json_encode([
                             'search' => $search,
                             'filterNi' => $filterNi,

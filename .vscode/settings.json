@@ -1,0 +1,8 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^cd c:/Users/BlackWolf/laragon/www/CCDI ; php -r \"foreach\\(\\['barryvdh/laravel-dompdf','endroid/qr-code','laravel/jetstream'\\] as \\$p\\)\\{try\\{echo \\$p\\.': '; \\$r=json_decode\\(shell_exec\\('composer show '\\.\\$p\\.' --format=json 2>&1'\\), true\\); if\\(isset\\(\\$r\\['name'\\]\\)\\) echo \\$r\\['version'\\]; else echo 'NOT INSTALLED'; echo PHP_EOL;\\}catch\\(Exception \\$e\\)\\{echo 'ERROR'; echo PHP_EOL;\\}\\}\" ; npm ls alpinejs flowbite lucide-react flowbite-react --depth=0$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}

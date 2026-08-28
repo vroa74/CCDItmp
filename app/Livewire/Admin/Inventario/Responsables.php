@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Livewire\Inventory;
+namespace App\Livewire\Admin\Inventario;
 
-use Livewire\Component;
 use App\Models\Inventory;
 use App\Models\User;
+use Livewire\Component;
 use Livewire\WithPagination;
-
 
 class Responsables extends Component
 {
     use WithPagination;
+
     protected $listeners = [
         'asignarResguardante',
         'asignacionResguardanteCancelada',
@@ -18,11 +18,17 @@ class Responsables extends Component
     ];
 
     public $resguardanteFilter = '';
+
     public $mensaje = '';
+
     public $tipoMensaje = '';
+
     public $filtroConUsuario = 'todos';
+
     public $totalAbsoluto = 0;
+
     public $querySQL = '';
+
     public $articuloFilter = '';
 
     public function updatedResguardanteFilter()
@@ -49,9 +55,9 @@ class Responsables extends Component
                 $valor = strtolower($this->resguardanteFilter);
                 $query->where(function ($subQuery) use ($valor) {
                     $subQuery->whereRaw('LOWER(resguardante) LIKE ?', ["%{$valor}%"])
-                             ->orWhereHas('responsible', function ($relationQuery) use ($valor) {
-                                 $relationQuery->whereRaw('LOWER(name) LIKE ?', ["%{$valor}%"]);
-                             });
+                        ->orWhereHas('responsible', function ($relationQuery) use ($valor) {
+                            $relationQuery->whereRaw('LOWER(name) LIKE ?', ["%{$valor}%"]);
+                        });
                 });
             })
             ->when($this->articuloFilter, function ($query) {
@@ -93,13 +99,15 @@ class Responsables extends Component
             $this->mensaje = 'Error: No se encontraron usuarios que coincidan con el filtro.';
             $this->tipoMensaje = 'error';
             $this->resguardanteFilter = '';
+
             return;
         }
 
         if ($userCount > 1) {
-            $this->mensaje = 'Error: Debe haber exactamente un usuario para realizar la asignación. Actualmente hay ' . $userCount . ' usuarios.';
+            $this->mensaje = 'Error: Debe haber exactamente un usuario para realizar la asignación. Actualmente hay '.$userCount.' usuarios.';
             $this->tipoMensaje = 'error';
             $this->resguardanteFilter = '';
+
             return;
         }
 
@@ -112,10 +120,11 @@ class Responsables extends Component
             })
             ->first();
 
-        if (!$user) {
+        if (! $user) {
             $this->mensaje = 'Error: No se pudo encontrar el usuario.';
             $this->tipoMensaje = 'error';
             $this->resguardanteFilter = '';
+
             return;
         }
 
@@ -125,9 +134,9 @@ class Responsables extends Component
                 $valor = strtolower($this->resguardanteFilter);
                 $query->where(function ($subQuery) use ($valor) {
                     $subQuery->whereRaw('LOWER(resguardante) LIKE ?', ["%{$valor}%"])
-                             ->orWhereHas('responsible', function ($relationQuery) use ($valor) {
-                                 $relationQuery->whereRaw('LOWER(name) LIKE ?', ["%{$valor}%"]);
-                             });
+                        ->orWhereHas('responsible', function ($relationQuery) use ($valor) {
+                            $relationQuery->whereRaw('LOWER(name) LIKE ?', ["%{$valor}%"]);
+                        });
                 });
             })
             ->get();
@@ -163,9 +172,9 @@ class Responsables extends Component
                 $valor = strtolower($this->resguardanteFilter);
                 $query->where(function ($subQuery) use ($valor) {
                     $subQuery->whereRaw('LOWER(resguardante) LIKE ?', ["%{$valor}%"])
-                             ->orWhereHas('responsible', function ($relationQuery) use ($valor) {
-                                 $relationQuery->whereRaw('LOWER(name) LIKE ?', ["%{$valor}%"]);
-                             });
+                        ->orWhereHas('responsible', function ($relationQuery) use ($valor) {
+                            $relationQuery->whereRaw('LOWER(name) LIKE ?', ["%{$valor}%"]);
+                        });
                 });
             })
             ->when($this->articuloFilter, function ($query) {
@@ -188,19 +197,19 @@ class Responsables extends Component
         // Obtener el query SQL
         $this->querySQL = $inventoryQuery->toSql();
         $bindings = $inventoryQuery->getBindings();
-        
+
         // Reemplazar los placeholders con los valores reales
         foreach ($bindings as $binding) {
-            $this->querySQL = preg_replace('/\?/', "'" . addslashes($binding) . "'", $this->querySQL, 1);
+            $this->querySQL = preg_replace('/\?/', "'".addslashes($binding)."'", $this->querySQL, 1);
         }
 
         // Aplicar paginación
         $inventories = $inventoryQuery->orderBy('created_at', 'desc')
             ->paginate(10, ['*'], 'inventoryPage');
 
-        return view('livewire.inventory.responsables', [
+        return view('livewire.admin.inventario.responsables', [
             'users' => $users,
             'inventories' => $inventories,
-        ]);        
+        ]);
     }
 }

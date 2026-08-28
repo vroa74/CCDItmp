@@ -1,70 +1,110 @@
 <?php
 
-namespace App\Livewire\Inventory;
+namespace App\Livewire\Admin\Inventario;
 
 use App\Models\Inventory;
 use App\Models\User;
-use Livewire\Component;
-use Livewire\WithPagination;
-use Livewire\WithFileUploads;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Livewire\Component;
+use Livewire\WithFileUploads;
+use Livewire\WithPagination;
 
 class Index extends Component
 {
-    use WithPagination, WithFileUploads;
+    use WithFileUploads, WithPagination;
 
     public $search = '';
+
     public $editing = false;
+
     public $inventoryId = null;
 
     // Propiedades para reportes
     public $showReportModal = false;
+
     public $reportType = '';
+
     public $reportDateFrom = '';
+
     public $reportDateTo = '';
+
     public $reportUser = '';
+
     public $reportStatus = '';
 
     // Campos del formulario para edición
     public $fecha_inv = '';
+
     public $user_id = '';
+
     public $res_id = '';
+
     public $fecha = '';
+
     public $dir = '';
+
     public $resguardante = '';
+
     public $user = '';
+
     public $is_pc = false;
+
     public $gpo = '';
+
     public $disp = '';
+
     public $type = '';
+
     public $articulo = '';
+
     public $ni = '';
+
     public $marca = '';
+
     public $modelo = '';
+
     public $ns = '';
+
     public $nombres = '';
+
     public $apa = '';
+
     public $ama = '';
+
     public $gpo_pc_user = '';
+
     public $fullname = '';
+
     public $software_instalado = '';
+
     public $info = '';
+
     public $esp = '';
+
     public $status = false;
 
     public $filterNi = '';
+
     public $filterDireccion = '';
+
     public $filterUserName = '';
+
     public $filterResponsibleName = '';
+
     public $filterNs = '';
+
     public $filterArticulo = '';
+
     public $filterMarca = '';
+
     public $filterModelo = '';
+
     public $filterFechaInv = '';
+
     public $filterServiceYear = '';
+
     public $perPage = 25;
 
     protected $rules = [
@@ -111,7 +151,7 @@ class Index extends Component
     {
         $this->resetPage();
         // Debug temporal para verificar el filtro
-        Log::info('Filtro dirección: ' . $this->filterDireccion);
+        Log::info('Filtro dirección: '.$this->filterDireccion);
     }
 
     public function updatedFilterUserName()
@@ -138,7 +178,7 @@ class Index extends Component
     public function toggleStatus($inventoryId)
     {
         $inventory = Inventory::find($inventoryId);
-        $inventory->update(['status' => !$inventory->status]);
+        $inventory->update(['status' => ! $inventory->status]);
         session()->flash('message', 'Estado del artículo actualizado.');
     }
 
@@ -176,7 +216,7 @@ class Index extends Component
             if ($this->reportUser) {
                 $query->where(function ($q) {
                     $q->where('user_id', $this->reportUser)
-                      ->orWhere('res_id', $this->reportUser);
+                        ->orWhere('res_id', $this->reportUser);
                 });
             }
 
@@ -209,12 +249,12 @@ class Index extends Component
             $this->closeReportModal();
 
             // Emitir evento para descargar el archivo
-            $this->dispatch('download-report', url: '/storage/temp/' . $filename);
+            $this->dispatch('download-report', url: '/storage/temp/'.$filename);
 
             session()->flash('message', 'Reporte generado correctamente. La descarga comenzará automáticamente.');
 
         } catch (\Exception $e) {
-            session()->flash('error', 'Error al generar el reporte: ' . $e->getMessage());
+            session()->flash('error', 'Error al generar el reporte: '.$e->getMessage());
         }
     }
 
@@ -224,11 +264,11 @@ class Index extends Component
         try {
             // Emitir evento inmediatamente para abrir el PDF en nueva pestaña
             $this->dispatch('openPdfInNewTab', url: route('inventory.pdf', $inventoryId));
-            
+
             session()->flash('message', 'Reporte del artículo generado correctamente.');
-            
+
         } catch (\Exception $e) {
-            session()->flash('error', 'Error al generar el reporte del artículo: ' . $e->getMessage());
+            session()->flash('error', 'Error al generar el reporte del artículo: '.$e->getMessage());
         }
     }
 
@@ -236,23 +276,23 @@ class Index extends Component
     {
         $data = [
             'title' => 'Reporte General de Inventario',
-            'dateRange' => $this->reportDateFrom . ' - ' . $this->reportDateTo,
+            'dateRange' => $this->reportDateFrom.' - '.$this->reportDateTo,
             'inventories' => $inventories,
             'totalItems' => $inventories->count(),
             'activeItems' => $inventories->where('status', true)->count(),
             'inactiveItems' => $inventories->where('status', false)->count(),
         ];
 
-        $pdf = PDF::loadView('reports.inventory.general', $data);
-        $filename = 'reporte_general_inventario_' . now()->format('Y-m-d_H-i-s') . '.pdf';
-        
+        $pdf = Pdf::loadView('reports.inventory.general', $data);
+        $filename = 'reporte_general_inventario_'.now()->format('Y-m-d_H-i-s').'.pdf';
+
         // Guardar temporalmente el PDF
-        $path = storage_path('app/public/temp/' . $filename);
-        if (!file_exists(dirname($path))) {
+        $path = storage_path('app/public/temp/'.$filename);
+        if (! file_exists(dirname($path))) {
             mkdir(dirname($path), 0755, true);
         }
         file_put_contents($path, $pdf->output());
-        
+
         return $filename;
     }
 
@@ -261,21 +301,21 @@ class Index extends Component
         $userInventories = $inventories->groupBy('user_id');
         $data = [
             'title' => 'Reporte de Inventario por Usuario',
-            'dateRange' => $this->reportDateFrom . ' - ' . $this->reportDateTo,
+            'dateRange' => $this->reportDateFrom.' - '.$this->reportDateTo,
             'userInventories' => $userInventories,
             'totalItems' => $inventories->count(),
         ];
 
-        $pdf = PDF::loadView('reports.inventory.by_user', $data);
-        $filename = 'reporte_inventario_por_usuario_' . now()->format('Y-m-d_H-i-s') . '.pdf';
-        
+        $pdf = Pdf::loadView('reports.inventory.by_user', $data);
+        $filename = 'reporte_inventario_por_usuario_'.now()->format('Y-m-d_H-i-s').'.pdf';
+
         // Guardar temporalmente el PDF
-        $path = storage_path('app/public/temp/' . $filename);
-        if (!file_exists(dirname($path))) {
+        $path = storage_path('app/public/temp/'.$filename);
+        if (! file_exists(dirname($path))) {
             mkdir(dirname($path), 0755, true);
         }
         file_put_contents($path, $pdf->output());
-        
+
         return $filename;
     }
 
@@ -288,21 +328,21 @@ class Index extends Component
 
         $data = [
             'title' => 'Reporte de Inventario por Tipo',
-            'dateRange' => $this->reportDateFrom . ' - ' . $this->reportDateTo,
+            'dateRange' => $this->reportDateFrom.' - '.$this->reportDateTo,
             'typeStats' => $typeStats,
             'totalItems' => $inventories->count(),
         ];
 
-        $pdf = PDF::loadView('reports.inventory.by_type', $data);
-        $filename = 'reporte_inventario_por_tipo_' . now()->format('Y-m-d_H-i-s') . '.pdf';
-        
+        $pdf = Pdf::loadView('reports.inventory.by_type', $data);
+        $filename = 'reporte_inventario_por_tipo_'.now()->format('Y-m-d_H-i-s').'.pdf';
+
         // Guardar temporalmente el PDF
-        $path = storage_path('app/public/temp/' . $filename);
-        if (!file_exists(dirname($path))) {
+        $path = storage_path('app/public/temp/'.$filename);
+        if (! file_exists(dirname($path))) {
             mkdir(dirname($path), 0755, true);
         }
         file_put_contents($path, $pdf->output());
-        
+
         return $filename;
     }
 
@@ -314,21 +354,21 @@ class Index extends Component
 
         $data = [
             'title' => 'Reporte de Inventario por Fecha',
-            'dateRange' => $this->reportDateFrom . ' - ' . $this->reportDateTo,
+            'dateRange' => $this->reportDateFrom.' - '.$this->reportDateTo,
             'dateStats' => $dateStats,
             'totalItems' => $inventories->count(),
         ];
 
-        $pdf = PDF::loadView('reports.inventory.by_date', $data);
-        $filename = 'reporte_inventario_por_fecha_' . now()->format('Y-m-d_H-i-s') . '.pdf';
-        
+        $pdf = Pdf::loadView('reports.inventory.by_date', $data);
+        $filename = 'reporte_inventario_por_fecha_'.now()->format('Y-m-d_H-i-s').'.pdf';
+
         // Guardar temporalmente el PDF
-        $path = storage_path('app/public/temp/' . $filename);
-        if (!file_exists(dirname($path))) {
+        $path = storage_path('app/public/temp/'.$filename);
+        if (! file_exists(dirname($path))) {
             mkdir(dirname($path), 0755, true);
         }
         file_put_contents($path, $pdf->output());
-        
+
         return $filename;
     }
 
@@ -343,10 +383,10 @@ class Index extends Component
         if (empty($string)) {
             return '';
         }
-        
+
         // Intentar diferentes codificaciones
         $encodings = ['UTF-8', 'ISO-8859-1', 'Windows-1252', 'ASCII'];
-        
+
         foreach ($encodings as $encoding) {
             if (mb_check_encoding($string, $encoding)) {
                 $cleaned = mb_convert_encoding($string, 'UTF-8', $encoding);
@@ -355,7 +395,7 @@ class Index extends Component
                 }
             }
         }
-        
+
         // Si nada funciona, intentar limpiar caracteres problemáticos
         return preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $string);
     }
@@ -364,7 +404,7 @@ class Index extends Component
     {
         // Construir la relación de servicios con filtro por año si está aplicado
         $servicesRelation = ['assignedUser', 'responsible'];
-        
+
         if ($this->filterServiceYear) {
             $servicesRelation['services'] = function ($query) {
                 $query->whereYear('service_inventory.service_date', $this->filterServiceYear);
@@ -373,53 +413,53 @@ class Index extends Component
         } else {
             $servicesRelation[] = 'services.solicitante';
         }
-        
+
         $query = Inventory::query()->with($servicesRelation);
-        
+
         // Debug temporal para ver la consulta SQL
         if ($this->filterDireccion) {
-            Log::info('Aplicando filtro dirección: ' . $this->filterDireccion);
+            Log::info('Aplicando filtro dirección: '.$this->filterDireccion);
         }
-        
+
         $inventories = $query
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
-                    $q->where('articulo', 'like', '%' . $this->search . '%')
-                      ->orWhere('ni', 'like', '%' . $this->search . '%')
-                      ->orWhere('ns', 'like', '%' . $this->search . '%')
-                      ->orWhere('marca', 'like', '%' . $this->search . '%')
-                      ->orWhere('resguardante', 'like', '%' . $this->search . '%');
+                    $q->where('articulo', 'like', '%'.$this->search.'%')
+                        ->orWhere('ni', 'like', '%'.$this->search.'%')
+                        ->orWhere('ns', 'like', '%'.$this->search.'%')
+                        ->orWhere('marca', 'like', '%'.$this->search.'%')
+                        ->orWhere('resguardante', 'like', '%'.$this->search.'%');
                 });
             })
             ->when($this->filterNi, function ($query) {
-                $query->where('ni', 'like', '%' . $this->filterNi . '%');
+                $query->where('ni', 'like', '%'.$this->filterNi.'%');
             })
             ->when($this->filterDireccion, function ($query) {
                 $query->whereHas('responsible', function ($q) {
-                    $q->where('direction', 'like', '%' . $this->filterDireccion . '%');
+                    $q->where('direction', 'like', '%'.$this->filterDireccion.'%');
                 });
             })
             ->when($this->filterUserName, function ($query) {
                 $query->whereHas('assignedUser', function ($q) {
-                    $q->where('name', 'like', '%' . $this->filterUserName . '%');
+                    $q->where('name', 'like', '%'.$this->filterUserName.'%');
                 });
             })
             ->when($this->filterResponsibleName, function ($query) {
                 $query->whereHas('responsible', function ($q) {
-                    $q->where('name', 'like', '%' . $this->filterResponsibleName . '%');
+                    $q->where('name', 'like', '%'.$this->filterResponsibleName.'%');
                 });
             })
             ->when($this->filterNs, function ($query) {
-                $query->where('ns', 'like', '%' . $this->filterNs . '%');
+                $query->where('ns', 'like', '%'.$this->filterNs.'%');
             })
             ->when($this->filterArticulo, function ($query) {
-                $query->where('articulo', 'like', '%' . $this->filterArticulo . '%');
+                $query->where('articulo', 'like', '%'.$this->filterArticulo.'%');
             })
             ->when($this->filterMarca, function ($query) {
-                $query->where('marca', 'like', '%' . $this->filterMarca . '%');
+                $query->where('marca', 'like', '%'.$this->filterMarca.'%');
             })
             ->when($this->filterModelo, function ($query) {
-                $query->where('modelo', 'like', '%' . $this->filterModelo . '%');
+                $query->where('modelo', 'like', '%'.$this->filterModelo.'%');
             })
             ->when($this->filterFechaInv, function ($query) {
                 $query->where('fecha_inv', $this->filterFechaInv);
@@ -429,24 +469,28 @@ class Index extends Component
 
         $users = User::where('status', true)->orderBy('name')->get();
         $uniqueFechasInv = Inventory::query()->select('fecha_inv')->distinct()->orderBy('fecha_inv', 'desc')->pluck('fecha_inv')->filter()->values();
-        
+
         // Obtener años únicos de servicios para el filtro
+        $yearExpression = DB::connection()->getDriverName() === 'sqlite'
+            ? "strftime('%Y', service_date) as year"
+            : 'YEAR(service_date) as year';
+
         $uniqueServiceYears = DB::table('service_inventory')
-            ->selectRaw('YEAR(service_date) as year')
+            ->selectRaw($yearExpression)
             ->whereNotNull('service_date')
             ->distinct()
             ->orderBy('year', 'desc')
             ->pluck('year')
             ->filter()
             ->values();
-        
+
         // Debug temporal para ver qué direcciones existen
         if ($this->filterDireccion) {
-            $direcciones = User::where('direction', 'like', '%' . $this->filterDireccion . '%')->pluck('direction', 'id');
-            Log::info('Direcciones encontradas: ' . $direcciones->toJson());
+            $direcciones = User::where('direction', 'like', '%'.$this->filterDireccion.'%')->pluck('direction', 'id');
+            Log::info('Direcciones encontradas: '.$direcciones->toJson());
         }
 
-        return view('livewire.inventory.index', [
+        return view('livewire.admin.inventario.index', [
             'inventories' => $inventories,
             'users' => $users,
             'uniqueFechasInv' => $uniqueFechasInv,

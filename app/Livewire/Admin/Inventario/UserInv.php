@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Inventory;
+namespace App\Livewire\Admin\Inventario;
 
 use App\Models\Inventory;
 use App\Models\User;
@@ -43,15 +43,15 @@ class UserInv extends Component
                 $valor = strtolower($this->resguardanteFilter);
                 $query->where(function ($subQuery) use ($valor) {
                     $subQuery->whereRaw('LOWER(resguardante) LIKE ?', ["%{$valor}%"])
-                             ->orWhereHas('responsible', function ($relationQuery) use ($valor) {
-                                 $relationQuery->whereRaw('LOWER(name) LIKE ?', ["%{$valor}%"]);
-                             });
+                        ->orWhereHas('responsible', function ($relationQuery) use ($valor) {
+                            $relationQuery->whereRaw('LOWER(name) LIKE ?', ["%{$valor}%"]);
+                        });
                 });
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10, ['*'], 'inventoryPage');
 
-        return view('livewire.inventory.user-inv', [
+        return view('livewire.admin.inventario.user-inv', [
             'users' => $users,
             'inventories' => $inventories,
         ]);

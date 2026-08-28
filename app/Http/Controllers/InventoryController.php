@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Traits\DeviceDetectionTrait;
-use Illuminate\Http\Request;
 use App\Models\Inventory;
+use App\Traits\DeviceDetectionTrait;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class InventoryController extends Controller
@@ -18,7 +19,8 @@ class InventoryController extends Controller
     public function index()
     {
         $deviceInfo = $this->getDeviceInfo();
-        return view('inventory.index', $deviceInfo);
+
+        return view('admin.inventario.index', $deviceInfo);
     }
 
     /**
@@ -27,7 +29,8 @@ class InventoryController extends Controller
     public function create()
     {
         $deviceInfo = $this->getDeviceInfo();
-        return view('inventory.create', $deviceInfo);
+
+        return view('admin.inventario.create', $deviceInfo);
     }
 
     /**
@@ -44,7 +47,8 @@ class InventoryController extends Controller
     public function show(string $id)
     {
         $deviceInfo = $this->getDeviceInfo();
-        return view('inventory.show', array_merge(['id' => $id], $deviceInfo));
+
+        return view('admin.inventario.show', array_merge(['id' => $id], $deviceInfo));
     }
 
     /**
@@ -53,7 +57,8 @@ class InventoryController extends Controller
     public function edit(string $id)
     {
         $deviceInfo = $this->getDeviceInfo();
-        return view('inventory.edit', array_merge(['id' => $id], $deviceInfo));
+
+        return view('admin.inventario.edit', array_merge(['id' => $id], $deviceInfo));
     }
 
     /**
@@ -71,15 +76,19 @@ class InventoryController extends Controller
     {
         //
     }
-    
-    public function userinv() {
+
+    public function userinv()
+    {
         $deviceInfo = $this->getDeviceInfo();
-        return view('inventory.user-inv', $deviceInfo);
+
+        return view('admin.inventario.user-inv', $deviceInfo);
     }
 
-    public function responsables() {
+    public function responsables()
+    {
         $deviceInfo = $this->getDeviceInfo();
-        return view('inventory.responsables', $deviceInfo);
+
+        return view('admin.inventario.responsables', $deviceInfo);
     }
 
     /**
@@ -89,20 +98,20 @@ class InventoryController extends Controller
     {
         try {
             $inventory = Inventory::with(['assignedUser', 'responsible'])->findOrFail($id);
-            
+
             $data = [
                 'inventory' => $inventory,
                 'title' => 'Reporte Individual de Inventario',
                 'generatedAt' => now()->format('d/m/Y H:i:s'),
             ];
-            
-            $pdf = PDF::loadView('reports.inventory.individual', $data)
-                      ->setPaper('letter', 'portrait');
-            
-            return $pdf->stream('reporte_inventario_' . $inventory->id . '.pdf');
-            
+
+            $pdf = Pdf::loadView('reports.inventory.individual', $data)
+                ->setPaper('letter', 'portrait');
+
+            return $pdf->stream('reporte_inventario_'.$inventory->id.'.pdf');
+
         } catch (\Exception $e) {
-            Log::error('Error generando PDF para inventario ' . $id . ': ' . $e->getMessage());
+            Log::error('Error generando PDF para inventario '.$id.': '.$e->getMessage());
             abort(500, 'Error al generar el PDF. Por favor, revise los logs.');
         }
     }
@@ -114,73 +123,73 @@ class InventoryController extends Controller
         // Aplicar filtros desde la sesión o request
         if ($request->has('filters')) {
             $filters = json_decode($request->filters, true);
-            
-            if (!empty($filters['search'])) {
+
+            if (! empty($filters['search'])) {
                 $query->where(function ($q) use ($filters) {
-                    $q->where('ni', 'like', '%' . $filters['search'] . '%')
-                        ->orWhere('articulo', 'like', '%' . $filters['search'] . '%')
-                        ->orWhere('marca', 'like', '%' . $filters['search'] . '%')
-                        ->orWhere('modelo', 'like', '%' . $filters['search'] . '%')
-                        ->orWhere('ns', 'like', '%' . $filters['search'] . '%');
+                    $q->where('ni', 'like', '%'.$filters['search'].'%')
+                        ->orWhere('articulo', 'like', '%'.$filters['search'].'%')
+                        ->orWhere('marca', 'like', '%'.$filters['search'].'%')
+                        ->orWhere('modelo', 'like', '%'.$filters['search'].'%')
+                        ->orWhere('ns', 'like', '%'.$filters['search'].'%');
                 });
             }
 
-            if (!empty($filters['filterNi'])) {
-                $query->where('ni', 'like', '%' . $filters['filterNi'] . '%');
+            if (! empty($filters['filterNi'])) {
+                $query->where('ni', 'like', '%'.$filters['filterNi'].'%');
             }
-            if (!empty($filters['filterDireccion'])) {
+            if (! empty($filters['filterDireccion'])) {
                 $query->whereHas('assignedUser', function ($q) use ($filters) {
-                    $q->where('direction', 'like', '%' . $filters['filterDireccion'] . '%');
+                    $q->where('direction', 'like', '%'.$filters['filterDireccion'].'%');
                 });
             }
-            if (!empty($filters['filterUserName'])) {
+            if (! empty($filters['filterUserName'])) {
                 $query->whereHas('assignedUser', function ($q) use ($filters) {
-                    $q->where('name', 'like', '%' . $filters['filterUserName'] . '%');
+                    $q->where('name', 'like', '%'.$filters['filterUserName'].'%');
                 });
             }
-            if (!empty($filters['filterResponsibleName'])) {
+            if (! empty($filters['filterResponsibleName'])) {
                 $query->whereHas('responsible', function ($q) use ($filters) {
-                    $q->where('name', 'like', '%' . $filters['filterResponsibleName'] . '%');
+                    $q->where('name', 'like', '%'.$filters['filterResponsibleName'].'%');
                 });
             }
-            if (!empty($filters['filterNs'])) {
-                $query->where('ns', 'like', '%' . $filters['filterNs'] . '%');
+            if (! empty($filters['filterNs'])) {
+                $query->where('ns', 'like', '%'.$filters['filterNs'].'%');
             }
-            if (!empty($filters['filterArticulo'])) {
-                $query->where('articulo', 'like', '%' . $filters['filterArticulo'] . '%');
+            if (! empty($filters['filterArticulo'])) {
+                $query->where('articulo', 'like', '%'.$filters['filterArticulo'].'%');
             }
-            if (!empty($filters['filterMarca'])) {
-                $query->where('marca', 'like', '%' . $filters['filterMarca'] . '%');
+            if (! empty($filters['filterMarca'])) {
+                $query->where('marca', 'like', '%'.$filters['filterMarca'].'%');
             }
-            if (!empty($filters['filterModelo'])) {
-                $query->where('modelo', 'like', '%' . $filters['filterModelo'] . '%');
+            if (! empty($filters['filterModelo'])) {
+                $query->where('modelo', 'like', '%'.$filters['filterModelo'].'%');
             }
-            if (!empty($filters['filterFechaInv'])) {
+            if (! empty($filters['filterFechaInv'])) {
                 $query->where('fecha_inv', $filters['filterFechaInv']);
             }
         }
 
         $inventories = $query->orderBy('created_at', 'desc')->get();
 
-        $filename = 'inventario_' . now()->format('Y-m-d_H-i-s') . '.csv';
+        $filename = 'inventario_'.now()->format('Y-m-d_H-i-s').'.csv';
         $headers = [
             'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
         ];
 
-        $callback = function() use ($inventories) {
+        $callback = function () use ($inventories) {
             $file = fopen('php://output', 'w');
             fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
-            
+
             fputcsv($file, [
-                'NI', 'Artículo', 'Marca', 'Modelo', 'N/S', 'Usuario Asignado', 
-                'Dirección', 'Responsable', 'Fecha Inventario', 'Servicios Asociados', 'Estado'
+                'NI', 'Artículo', 'Marca', 'Modelo', 'N/S', 'Usuario Asignado',
+                'Dirección', 'Responsable', 'Fecha Inventario', 'Servicios Asociados', 'Estado',
             ]);
 
             foreach ($inventories as $inventory) {
-                $serviciosAsociados = $inventory->services->count() > 0 
-                    ? $inventory->services->pluck('service_date')->map(function($date) {
-                        return \Carbon\Carbon::parse($date)->format('d/m/Y');
+                $serviciosAsociados = $inventory->services->count() > 0
+                    ? $inventory->services->pluck('service_date')->map(function ($date) {
+                        return Carbon::parse($date)->format('d/m/Y');
                     })->implode(', ')
                     : 'Sin servicios';
 
@@ -195,7 +204,7 @@ class InventoryController extends Controller
                     $inventory->responsible->name ?? 'N/A',
                     $inventory->fecha_inv,
                     $serviciosAsociados,
-                    $inventory->status ? 'Activo' : 'Inactivo'
+                    $inventory->status ? 'Activo' : 'Inactivo',
                 ]);
             }
 
@@ -212,48 +221,48 @@ class InventoryController extends Controller
         // Aplicar filtros desde la sesión o request
         if ($request->has('filters')) {
             $filters = json_decode($request->filters, true);
-            
-            if (!empty($filters['search'])) {
+
+            if (! empty($filters['search'])) {
                 $query->where(function ($q) use ($filters) {
-                    $q->where('ni', 'like', '%' . $filters['search'] . '%')
-                        ->orWhere('articulo', 'like', '%' . $filters['search'] . '%')
-                        ->orWhere('marca', 'like', '%' . $filters['search'] . '%')
-                        ->orWhere('modelo', 'like', '%' . $filters['search'] . '%')
-                        ->orWhere('ns', 'like', '%' . $filters['search'] . '%');
+                    $q->where('ni', 'like', '%'.$filters['search'].'%')
+                        ->orWhere('articulo', 'like', '%'.$filters['search'].'%')
+                        ->orWhere('marca', 'like', '%'.$filters['search'].'%')
+                        ->orWhere('modelo', 'like', '%'.$filters['search'].'%')
+                        ->orWhere('ns', 'like', '%'.$filters['search'].'%');
                 });
             }
 
-            if (!empty($filters['filterNi'])) {
-                $query->where('ni', 'like', '%' . $filters['filterNi'] . '%');
+            if (! empty($filters['filterNi'])) {
+                $query->where('ni', 'like', '%'.$filters['filterNi'].'%');
             }
-            if (!empty($filters['filterDireccion'])) {
+            if (! empty($filters['filterDireccion'])) {
                 $query->whereHas('assignedUser', function ($q) use ($filters) {
-                    $q->where('direction', 'like', '%' . $filters['filterDireccion'] . '%');
+                    $q->where('direction', 'like', '%'.$filters['filterDireccion'].'%');
                 });
             }
-            if (!empty($filters['filterUserName'])) {
+            if (! empty($filters['filterUserName'])) {
                 $query->whereHas('assignedUser', function ($q) use ($filters) {
-                    $q->where('name', 'like', '%' . $filters['filterUserName'] . '%');
+                    $q->where('name', 'like', '%'.$filters['filterUserName'].'%');
                 });
             }
-            if (!empty($filters['filterResponsibleName'])) {
+            if (! empty($filters['filterResponsibleName'])) {
                 $query->whereHas('responsible', function ($q) use ($filters) {
-                    $q->where('name', 'like', '%' . $filters['filterResponsibleName'] . '%');
+                    $q->where('name', 'like', '%'.$filters['filterResponsibleName'].'%');
                 });
             }
-            if (!empty($filters['filterNs'])) {
-                $query->where('ns', 'like', '%' . $filters['filterNs'] . '%');
+            if (! empty($filters['filterNs'])) {
+                $query->where('ns', 'like', '%'.$filters['filterNs'].'%');
             }
-            if (!empty($filters['filterArticulo'])) {
-                $query->where('articulo', 'like', '%' . $filters['filterArticulo'] . '%');
+            if (! empty($filters['filterArticulo'])) {
+                $query->where('articulo', 'like', '%'.$filters['filterArticulo'].'%');
             }
-            if (!empty($filters['filterMarca'])) {
-                $query->where('marca', 'like', '%' . $filters['filterMarca'] . '%');
+            if (! empty($filters['filterMarca'])) {
+                $query->where('marca', 'like', '%'.$filters['filterMarca'].'%');
             }
-            if (!empty($filters['filterModelo'])) {
-                $query->where('modelo', 'like', '%' . $filters['filterModelo'] . '%');
+            if (! empty($filters['filterModelo'])) {
+                $query->where('modelo', 'like', '%'.$filters['filterModelo'].'%');
             }
-            if (!empty($filters['filterFechaInv'])) {
+            if (! empty($filters['filterFechaInv'])) {
                 $query->where('fecha_inv', $filters['filterFechaInv']);
             }
         }
@@ -265,7 +274,7 @@ class InventoryController extends Controller
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventario - ' . now()->format('d/m/Y H:i') . '</title>
+    <title>Inventario - '.now()->format('d/m/Y H:i').'</title>
     <style>
         * {
             margin: 0;
@@ -436,8 +445,8 @@ class InventoryController extends Controller
     <div class="container">
         <h1>Inventario de Equipos</h1>
         <div class="info">
-            <p>Fecha de generación: ' . now()->format('d/m/Y H:i:s') . '</p>
-            <p>Total de registros: ' . $inventories->count() . '</p>
+            <p>Fecha de generación: '.now()->format('d/m/Y H:i:s').'</p>
+            <p>Total de registros: '.$inventories->count().'</p>
         </div>
         <div class="table-container">
             <table>
@@ -459,13 +468,13 @@ class InventoryController extends Controller
             $statusText = $inventory->status ? 'Activo' : 'Inactivo';
 
             // Columna Artículo
-            $articuloHtml = '<div class="font-medium">' . e($inventory->articulo ?? 'N/A') . '</div>';
-            $articuloHtml .= '<div class="text-xs">NI: ' . e($inventory->ni ?? 'N/A') . '</div>';
+            $articuloHtml = '<div class="font-medium">'.e($inventory->articulo ?? 'N/A').'</div>';
+            $articuloHtml .= '<div class="text-xs">NI: '.e($inventory->ni ?? 'N/A').'</div>';
 
             // Columna Detalles
-            $detallesHtml = '<div class="detail-line"><span class="label">NS:</span> ' . e($inventory->ns ?? 'N/A') . '</div>';
-            $detallesHtml .= '<div class="detail-line"><span class="label">Marca:</span> ' . e($inventory->marca ?? 'N/A') . '</div>';
-            $detallesHtml .= '<div class="detail-line"><span class="label">Modelo:</span> ' . e($inventory->modelo ?? 'N/A') . '</div>';
+            $detallesHtml = '<div class="detail-line"><span class="label">NS:</span> '.e($inventory->ns ?? 'N/A').'</div>';
+            $detallesHtml .= '<div class="detail-line"><span class="label">Marca:</span> '.e($inventory->marca ?? 'N/A').'</div>';
+            $detallesHtml .= '<div class="detail-line"><span class="label">Modelo:</span> '.e($inventory->modelo ?? 'N/A').'</div>';
 
             // Columna Resguardante
             $resguardanteHtml = '<div class="font-medium">';
@@ -480,21 +489,21 @@ class InventoryController extends Controller
             if ($inventory->assignedUser) {
                 $usuariosHtml .= '<div class="user-section">';
                 $usuariosHtml .= '<div class="user-label">Usuario:</div>';
-                $usuariosHtml .= '<div class="user-name-assigned">' . e($inventory->assignedUser->name ?? 'N/A') . '</div>';
-                $usuariosHtml .= '<div class="user-position-assigned">' . e($inventory->assignedUser->position ?? 'Sin posición') . '</div>';
+                $usuariosHtml .= '<div class="user-name-assigned">'.e($inventory->assignedUser->name ?? 'N/A').'</div>';
+                $usuariosHtml .= '<div class="user-position-assigned">'.e($inventory->assignedUser->position ?? 'Sin posición').'</div>';
                 $usuariosHtml .= '</div>';
             }
             if ($inventory->responsible) {
                 $usuariosHtml .= '<div class="user-section">';
                 $usuariosHtml .= '<div class="user-label">Resguardante:</div>';
-                $usuariosHtml .= '<div class="user-name-responsible">' . e($inventory->responsible->name ?? 'N/A') . '</div>';
-                $usuariosHtml .= '<div class="user-position-responsible">' . e($inventory->responsible->position ?? 'Sin posición') . '</div>';
+                $usuariosHtml .= '<div class="user-name-responsible">'.e($inventory->responsible->name ?? 'N/A').'</div>';
+                $usuariosHtml .= '<div class="user-position-responsible">'.e($inventory->responsible->position ?? 'Sin posición').'</div>';
                 $usuariosHtml .= '</div>';
             }
 
             // Columna Tipo
-            $tipoHtml = $inventory->is_pc 
-                ? '<span class="badge badge-pc">PC</span>' 
+            $tipoHtml = $inventory->is_pc
+                ? '<span class="badge badge-pc">PC</span>'
                 : '<span class="badge badge-other">Otro</span>';
 
             // Columna Servicios Asociados
@@ -502,18 +511,18 @@ class InventoryController extends Controller
             if ($inventory->services && $inventory->services->count() > 0) {
                 foreach ($inventory->services as $service) {
                     $serviciosHtml .= '<div class="service-box">';
-                    $serviciosHtml .= '<div class="service-title">Servicio #' . $service->id . '</div>';
-                    
+                    $serviciosHtml .= '<div class="service-title">Servicio #'.$service->id.'</div>';
+
                     if ($service->solicitante) {
-                        $serviciosHtml .= '<div class="service-detail"><span class="label">Usuario:</span> ' . e($service->solicitante->name) . '</div>';
-                        $serviciosHtml .= '<div class="service-detail"><span class="label">Cargo:</span> ' . e($service->solicitante->position ?? 'S/C') . '</div>';
-                        $serviciosHtml .= '<div class="service-detail"><span class="label">Dirección:</span> ' . e($service->solicitante->direction ?? 'S/C') . '</div>';
+                        $serviciosHtml .= '<div class="service-detail"><span class="label">Usuario:</span> '.e($service->solicitante->name).'</div>';
+                        $serviciosHtml .= '<div class="service-detail"><span class="label">Cargo:</span> '.e($service->solicitante->position ?? 'S/C').'</div>';
+                        $serviciosHtml .= '<div class="service-detail"><span class="label">Dirección:</span> '.e($service->solicitante->direction ?? 'S/C').'</div>';
                     }
-                    
+
                     if ($service->service_date) {
-                        $serviciosHtml .= '<div class="service-detail"><span class="label">Fecha:</span> ' . \Carbon\Carbon::parse($service->service_date)->format('d/m/Y') . '</div>';
+                        $serviciosHtml .= '<div class="service-detail"><span class="label">Fecha:</span> '.Carbon::parse($service->service_date)->format('d/m/Y').'</div>';
                     }
-                    
+
                     $serviciosHtml .= '</div>';
                 }
             } else {
@@ -521,13 +530,13 @@ class InventoryController extends Controller
             }
 
             $html .= '<tr>
-                <td>' . $articuloHtml . '</td>
-                <td>' . $detallesHtml . '</td>
-                <td>' . $resguardanteHtml . '</td>
-                <td>' . $usuariosHtml . '</td>
-                <td style="text-align: center;">' . $tipoHtml . '</td>
-                <td>' . $serviciosHtml . '</td>
-                <td style="text-align: center;"><span class="' . $statusClass . '">' . $statusText . '</span></td>
+                <td>'.$articuloHtml.'</td>
+                <td>'.$detallesHtml.'</td>
+                <td>'.$resguardanteHtml.'</td>
+                <td>'.$usuariosHtml.'</td>
+                <td style="text-align: center;">'.$tipoHtml.'</td>
+                <td>'.$serviciosHtml.'</td>
+                <td style="text-align: center;"><span class="'.$statusClass.'">'.$statusText.'</span></td>
             </tr>';
         }
 
@@ -536,16 +545,16 @@ class InventoryController extends Controller
             </table>
         </div>
         <div class="total">
-            Total de registros: ' . $inventories->count() . '
+            Total de registros: '.$inventories->count().'
         </div>
     </div>
 </body>
 </html>';
 
-        $filename = 'inventario_' . now()->format('Y-m-d_H-i-s') . '.html';
-        
+        $filename = 'inventario_'.now()->format('Y-m-d_H-i-s').'.html';
+
         return response($html, 200)
             ->header('Content-Type', 'text/html; charset=UTF-8')
-            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+            ->header('Content-Disposition', 'attachment; filename="'.$filename.'"');
     }
 }

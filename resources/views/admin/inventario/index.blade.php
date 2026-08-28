@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-100 leading-tight">
-            {{ __('Crear Inventario') }}
+            {{ __('Inventario') }}
         </h2>
     </x-slot>
 
@@ -10,10 +10,10 @@
         <div class="{{ $isMobile ? 'px-2' : 'px-6' }}">
             @if($isMobile)
                 {{-- Componente móvil optimizado --}}
-                @livewire('inventory.mcreate')
+                @livewire('admin.inventario.mindex')
             @else
                 {{-- Componente desktop --}}
-                @livewire('inventory.create')
+                @livewire('admin.inventario.index')
             @endif
         </div>
     </div>
@@ -21,7 +21,7 @@
     {{-- Scripts específicos por dispositivo --}}
     @if($isMobile)
         <script>
-            // Optimizaciones específicas para móvil en formularios
+            // Optimizaciones específicas para móvil
             document.addEventListener('DOMContentLoaded', function() {
                 // Reducir animaciones en móvil
                 document.body.style.setProperty('--tw-transition-duration', '0.1s');

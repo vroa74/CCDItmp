@@ -10,10 +10,10 @@
         <div class="{{ $isMobile ? 'px-2' : 'px-6' }}">
             @if($isMobile)
                 {{-- Componente móvil optimizado --}}
-                @livewire('inventory.medit', ['id' => $id])
+                @livewire('admin.inventario.medit', ['id' => $id])
             @else
                 {{-- Componente desktop --}}
-                @livewire('inventory.edit', ['id' => $id])
+                @livewire('admin.inventario.edit', ['id' => $id])
             @endif
         </div>
     </div>

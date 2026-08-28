@@ -30,13 +30,6 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/notie/4.3.1/notie.min.css" rel="stylesheet" />
         <!-- JS -->
 
-
-
-
-
-
-        
-
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -48,7 +41,19 @@
 
         <div class="min-h-screen bg-gray-900">
             <div class="fixed top-0 left-0 right-0 z-50 h-16">
-                @livewire('navigation-menu')
+                @switch(auth()->user()?->tipo)
+                    @case(1)
+                        @livewire('navigation-menu-a')
+                        @break
+                    @case(2)
+                        @livewire('navigation-menu-t')
+                        @break
+                    @case(3)
+                        @livewire('navigation-menu-g')
+                        @break
+                    @default
+                        @livewire('navigation-menu-g')
+                @endswitch
             </div>
             <!-- Page Heading -->
             @if (isset($header))
@@ -64,9 +69,6 @@
             <main class="bg-gray-900 @if(isset($header)) pt-32 @else pt-16 @endif">
                 {{ $slot }}
             </main>
-
-
-
             
         </div>
         @stack('modals')

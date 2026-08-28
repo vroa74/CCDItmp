@@ -4,5 +4,27 @@
             "approve": true,
             "matchCommandLine": true
         }
+    },
+    "github.copilot.chat.locale": "es",
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/node_modules": true,
+        "**/vendor": true,
+        "**/storage/framework": true,
+        "**/storage/logs": true,
+        "**/public/build": true,
+        "**/cdix": true
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/vendor": true,
+        "**/storage": true,
+        "**/public/build": true,
+        "**/cdix": true
     }
 }

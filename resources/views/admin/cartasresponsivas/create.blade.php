@@ -6,6 +6,6 @@
     </x-slot>
 
     <div class="py-4">
-        @livewire('cartasresponsivas.create')
+        @livewire('admin.cartasresponsivas.create')
     </div>
 </x-app-layout>

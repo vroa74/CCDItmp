@@ -105,7 +105,7 @@ class InventoryController extends Controller
                 'generatedAt' => now()->format('d/m/Y H:i:s'),
             ];
 
-            $pdf = Pdf::loadView('reports.inventory.individual', $data)
+            $pdf = Pdf::loadView('reportesImpresos.inventory.individual', $data)
                 ->setPaper('letter', 'portrait');
 
             return $pdf->stream('reporte_inventario_'.$inventory->id.'.pdf');

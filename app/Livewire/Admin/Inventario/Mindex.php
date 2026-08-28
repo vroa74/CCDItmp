@@ -346,7 +346,7 @@ class Mindex extends Component
             'inactiveItems' => $inventories->where('status', false)->count(),
         ];
 
-        $pdf = Pdf::loadView('reports.inventory.general', $data);
+        $pdf = Pdf::loadView('reportesImpresos.inventory.general', $data);
         $filename = 'reporte_general_inventario_'.now()->format('Y-m-d_H-i-s').'.pdf';
 
         // Guardar temporalmente el PDF
@@ -369,7 +369,7 @@ class Mindex extends Component
             'totalItems' => $inventories->count(),
         ];
 
-        $pdf = Pdf::loadView('reports.inventory.by_user', $data);
+        $pdf = Pdf::loadView('reportesImpresos.inventory.by_user', $data);
         $filename = 'reporte_inventario_por_usuario_'.now()->format('Y-m-d_H-i-s').'.pdf';
 
         // Guardar temporalmente el PDF
@@ -396,7 +396,7 @@ class Mindex extends Component
             'totalItems' => $inventories->count(),
         ];
 
-        $pdf = Pdf::loadView('reports.inventory.by_type', $data);
+        $pdf = Pdf::loadView('reportesImpresos.inventory.by_type', $data);
         $filename = 'reporte_inventario_por_tipo_'.now()->format('Y-m-d_H-i-s').'.pdf';
 
         // Guardar temporalmente el PDF
@@ -422,7 +422,7 @@ class Mindex extends Component
             'totalItems' => $inventories->count(),
         ];
 
-        $pdf = Pdf::loadView('reports.inventory.by_date', $data);
+        $pdf = Pdf::loadView('reportesImpresos.inventory.by_date', $data);
         $filename = 'reporte_inventario_por_fecha_'.now()->format('Y-m-d_H-i-s').'.pdf';
 
         // Guardar temporalmente el PDF

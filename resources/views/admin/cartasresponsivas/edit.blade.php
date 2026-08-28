@@ -1,11 +1,12 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-100 leading-tight">
-            {{ __('Gestión de Cartas Responsivas') }}
+            {{ __('Inventario') }}
         </h2>
     </x-slot>
 
     <div class="py-4">
-        @livewire('cartasresponsivas.index')
+        {{ $id }}
+        {{-- @livewire('admin.cartasresponsivas.create') --}}
     </div>
 </x-app-layout>

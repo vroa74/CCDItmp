@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Livewire\Cartasresponsivas;
+namespace App\Livewire\Admin\Cartasresponsivas;
 
 use App\Models\Responsiva;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Illuminate\Support\Facades\Log;
 
 class Index extends Component
 {
@@ -13,12 +13,16 @@ class Index extends Component
 
     // Propiedades para búsqueda y filtros
     public $search = '';
+
     public $filterCodigo = '';
+
     public $filterFecha = '';
+
     public $filterAuditoria = '';
 
     // Propiedades para ordenamiento
     public $sortField = 'created_at';
+
     public $sortDirection = 'desc';
 
     protected $queryString = [
@@ -32,8 +36,6 @@ class Index extends Component
     {
         $this->resetPage();
     }
-
-
 
     public function updatingFilterCodigo()
     {
@@ -76,7 +78,7 @@ class Index extends Component
             $responsiva->delete();
             session()->flash('message', 'Carta responsiva eliminada correctamente.');
         } catch (\Exception $e) {
-            Log::error('Error eliminando carta responsiva: ' . $e->getMessage());
+            Log::error('Error eliminando carta responsiva: '.$e->getMessage());
             session()->flash('error', 'Error al eliminar la carta responsiva.');
         }
     }
@@ -88,22 +90,22 @@ class Index extends Component
                 ->with(['user', 'responsable', 'informatica', 'inventoryResponsivas.inventory'])
                 ->when($this->search, function ($query) {
                     $query->where(function ($subQuery) {
-                        $subQuery->where('codigo', 'like', '%' . $this->search . '%')
-                                 ->orWhere('observacion', 'like', '%' . $this->search . '%')
-                                 ->orWhereHas('user', function ($userQuery) {
-                                     $userQuery->where('name', 'like', '%' . $this->search . '%');
-                                 })
-                                 ->orWhereHas('responsable', function ($responsableQuery) {
-                                     $responsableQuery->where('name', 'like', '%' . $this->search . '%');
-                                 })
-                                 ->orWhereHas('informatica', function ($informaticaQuery) {
-                                     $informaticaQuery->where('name', 'like', '%' . $this->search . '%');
-                                 });
+                        $subQuery->where('codigo', 'like', '%'.$this->search.'%')
+                            ->orWhere('observacion', 'like', '%'.$this->search.'%')
+                            ->orWhereHas('user', function ($userQuery) {
+                                $userQuery->where('name', 'like', '%'.$this->search.'%');
+                            })
+                            ->orWhereHas('responsable', function ($responsableQuery) {
+                                $responsableQuery->where('name', 'like', '%'.$this->search.'%');
+                            })
+                            ->orWhereHas('informatica', function ($informaticaQuery) {
+                                $informaticaQuery->where('name', 'like', '%'.$this->search.'%');
+                            });
                     });
                 })
 
                 ->when($this->filterCodigo, function ($query) {
-                    $query->where('codigo', 'like', '%' . $this->filterCodigo . '%');
+                    $query->where('codigo', 'like', '%'.$this->filterCodigo.'%');
                 })
                 ->when($this->filterFecha, function ($query) {
                     $query->whereDate('fecha', $this->filterFecha);
@@ -113,20 +115,18 @@ class Index extends Component
                 });
 
             $responsivas = $query->orderBy($this->sortField, $this->sortDirection)
-                                ->paginate(10);
+                ->paginate(10);
 
-
-            
-            return view('livewire.cartasresponsivas.index', [
-                'responsivas' => $responsivas
+            return view('livewire.admin.cartasresponsivas.index', [
+                'responsivas' => $responsivas,
             ]);
         } catch (\Exception $e) {
-            Log::error('Error en render de Index: ' . $e->getMessage());
-            Log::error('Stack trace: ' . $e->getTraceAsString());
-            
+            Log::error('Error en render de Index: '.$e->getMessage());
+            Log::error('Stack trace: '.$e->getTraceAsString());
+
             // Retornar vista con error
-            return view('livewire.cartasresponsivas.index', [
-                'responsivas' => collect([])
+            return view('livewire.admin.cartasresponsivas.index', [
+                'responsivas' => collect([]),
             ]);
         }
     }

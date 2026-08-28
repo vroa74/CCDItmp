@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Responsiva;
-use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
 
@@ -16,12 +15,12 @@ class CartasResponsivaController extends Controller
     {
         $responsiva = Responsiva::with([
             'user',
-            'responsable', 
+            'responsable',
             'informatica',
-            'inventoryResponsivas.inventory'
+            'inventoryResponsivas.inventory',
         ])->findOrFail($id);
 
-        return view('reports.cartasresponsiva', compact('responsiva'));
+        return view('reportesImpresos.cartasresponsivas.individual', compact('responsiva'));
     }
 
     /**
@@ -31,16 +30,16 @@ class CartasResponsivaController extends Controller
     {
         $responsiva = Responsiva::with([
             'user',
-            'responsable', 
+            'responsable',
             'informatica',
-            'inventoryResponsivas.inventory'
+            'inventoryResponsivas.inventory',
         ])->where('codigo', $codigo)->first();
 
-        if (!$responsiva) {
+        if (! $responsiva) {
             abort(404, 'Carta responsiva no encontrada');
         }
 
-        return view('reports.cartasresponsiva', compact('responsiva'));
+        return view('reportesImpresos.cartasresponsivas.individual', compact('responsiva'));
     }
 
     /**
@@ -49,36 +48,36 @@ class CartasResponsivaController extends Controller
     public function generatePdf($id)
     {
         try {
-            Log::info('Iniciando generación de PDF para carta responsiva: ' . $id);
-            
+            Log::info('Iniciando generación de PDF para carta responsiva: '.$id);
+
             // Obtener la responsiva con todas sus relaciones
             $responsiva = Responsiva::with([
                 'user',
-                'responsable', 
+                'responsable',
                 'informatica',
-                'inventoryResponsivas.inventory'
+                'inventoryResponsivas.inventory',
             ])->findOrFail($id);
 
             // Preparar datos para la vista
             $data = [
                 'responsiva' => $responsiva,
-                'title' => 'Carta Responsiva - ' . $responsiva->codigo,
+                'title' => 'Carta Responsiva - '.$responsiva->codigo,
                 'generatedAt' => now()->format('d/m/Y H:i:s'),
             ];
 
             // Generar el PDF usando la misma vista que la página web
-            $pdf = PDF::loadView('reports.cartasresponsivas.individual', $data)
-                      ->setPaper('letter', 'portrait');
+            $pdf = Pdf::loadView('reportesImpresos.cartasresponsivas.individual', $data)
+                ->setPaper('letter', 'portrait');
 
-            Log::info('PDF generado exitosamente para carta responsiva: ' . $responsiva->codigo);
-            
+            Log::info('PDF generado exitosamente para carta responsiva: '.$responsiva->codigo);
+
             // Hacer stream del PDF directamente al navegador
-            return $pdf->stream('carta_responsiva_' . preg_replace('/[^A-Za-z0-9_-]/', '_', $responsiva->codigo) . '.pdf');
+            return $pdf->stream('carta_responsiva_'.preg_replace('/[^A-Za-z0-9_-]/', '_', $responsiva->codigo).'.pdf');
 
         } catch (\Exception $e) {
-            Log::error('Error generando PDF para carta responsiva ' . $id . ': ' . $e->getMessage());
-            Log::error('Stack trace: ' . $e->getTraceAsString());
-            abort(500, 'Error al generar el PDF: ' . $e->getMessage());
+            Log::error('Error generando PDF para carta responsiva '.$id.': '.$e->getMessage());
+            Log::error('Stack trace: '.$e->getTraceAsString());
+            abort(500, 'Error al generar el PDF: '.$e->getMessage());
         }
     }
-} 
+}

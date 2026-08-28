@@ -1,58 +1,79 @@
 <?php
 
-namespace App\Livewire\Cartasresponsivas;
+namespace App\Livewire\Admin\Cartasresponsivas;
 
+use App\Models\Inventory;
+use App\Models\InventoryPhoto;
+use App\Models\InventoryResponsiva;
 use App\Models\Responsiva;
 use App\Models\User;
-use App\Models\Inventory;
-use App\Models\InventoryResponsiva;
-use App\Models\InventoryPhoto;
-use Livewire\Component;
-use Livewire\WithPagination;
-use Livewire\WithFileUploads;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Livewire\Component;
+use Livewire\WithFileUploads;
+use Livewire\WithPagination;
 
 class Create extends Component
 {
-    use WithPagination, WithFileUploads;
+    use WithFileUploads, WithPagination;
 
     protected $listeners = ['refreshComponent' => '$refresh'];
 
     public $user_id;
+
     public $responsable_id;
+
     public $informatica_id;
+
     public $fecha;
+
     public $codigo;
+
     public $auditoria = false;
+
     public $users;
+
     public $inventories;
+
     public $selected_inventories = [];
-    
+
     // Modal de inventarios
     public $showInventoryModal = false;
+
     public $inventorySearch = '';
+
     public $filteredInventories = [];
-    
+
     // Descripciones
     public $inventoryDescriptions = [];
 
     // Fotos
     public $selectedInventoryForPhotos = null;
+
     public $photo = [];
+
     public $photoPreview = [];
+
     public $photoDescription = [];
+
     public $openPhotoAccordion = [];
+
     public $showAddPhotoForm = [];
 
     public $showPhotoModal = [];
+
     public $modalPhoto = [];
+
     public $modalPhotoPreview = [];
+
     public $modalPhotoDescription = [];
 
     public $showUserModal = false;
+
     public $userModalTarget = null; // 'user_id', 'responsable_id', 'informatica_id'
+
     public $userModalFilter = '';
+
     public $userModalList = [];
 
     public $activePhotoFormId = null;
@@ -74,7 +95,7 @@ class Create extends Component
         $this->inventories = Inventory::where('status', true)->orderBy('id', 'desc')->get();
         $this->filteredInventories = $this->inventories;
         $this->fecha = now()->format('Y-m-d');
-        $this->codigo = 'CR/' . now()->format('Ymd/His');
+        $this->codigo = 'CR/'.now()->format('Ymd/His');
     }
 
     public function openInventoryModal()
@@ -98,7 +119,7 @@ class Create extends Component
 
     public function selectInventory($inventoryId)
     {
-        if (!in_array($inventoryId, $this->selected_inventories)) {
+        if (! in_array($inventoryId, $this->selected_inventories)) {
             $this->selected_inventories[] = $inventoryId;
             $this->inventoryDescriptions[$inventoryId] = '';
             $this->openPhotoAccordion[$inventoryId] = true;
@@ -110,7 +131,7 @@ class Create extends Component
 
     public function removeInventory($inventoryId)
     {
-        $this->selected_inventories = array_filter($this->selected_inventories, function($id) use ($inventoryId) {
+        $this->selected_inventories = array_filter($this->selected_inventories, function ($id) use ($inventoryId) {
             return $id != $inventoryId;
         });
         unset($this->inventoryDescriptions[$inventoryId]);
@@ -122,24 +143,25 @@ class Create extends Component
     public function getSelectedInventoryItems()
     {
         $items = Inventory::whereIn('id', $this->selected_inventories)->get()->keyBy('id');
-        return collect($this->selected_inventories)->map(fn($id) => $items[$id])->filter();
+
+        return collect($this->selected_inventories)->map(fn ($id) => $items[$id])->filter();
     }
 
     public function getFilteredInventoriesPaginated()
     {
         $query = Inventory::where('status', true);
-        
-        if (!empty($this->inventorySearch)) {
+
+        if (! empty($this->inventorySearch)) {
             $search = strtolower($this->inventorySearch);
-            $query->where(function($q) use ($search) {
-                $q->whereRaw('LOWER(articulo) LIKE ?', ['%' . $search . '%'])
-                  ->orWhereRaw('LOWER(ni) LIKE ?', ['%' . $search . '%'])
-                  ->orWhereRaw('LOWER(ns) LIKE ?', ['%' . $search . '%'])
-                  ->orWhereRaw('LOWER(marca) LIKE ?', ['%' . $search . '%'])
-                  ->orWhereRaw('LOWER(modelo) LIKE ?', ['%' . $search . '%']);
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw('LOWER(articulo) LIKE ?', ['%'.$search.'%'])
+                    ->orWhereRaw('LOWER(ni) LIKE ?', ['%'.$search.'%'])
+                    ->orWhereRaw('LOWER(ns) LIKE ?', ['%'.$search.'%'])
+                    ->orWhereRaw('LOWER(marca) LIKE ?', ['%'.$search.'%'])
+                    ->orWhereRaw('LOWER(modelo) LIKE ?', ['%'.$search.'%']);
             });
         }
-        
+
         return $query->orderBy('id', 'desc')->paginate(10);
     }
 
@@ -172,8 +194,8 @@ class Create extends Component
     public function addPhoto($inventoryId)
     {
         $this->validate([
-            'photo.' . $inventoryId => 'required|image|max:2048',
-            'photoDescription.' . $inventoryId => 'nullable|string|max:255',
+            'photo.'.$inventoryId => 'required|image|max:2048',
+            'photoDescription.'.$inventoryId => 'nullable|string|max:255',
         ]);
         $path = $this->photo[$inventoryId]->store('inventory_photos', 'public');
         InventoryPhoto::create([
@@ -207,6 +229,7 @@ class Create extends Component
         if ($this->selectedInventoryForPhotos) {
             return InventoryPhoto::where('inventory_id', $this->selectedInventoryForPhotos)->get();
         }
+
         return collect();
     }
 
@@ -252,8 +275,8 @@ class Create extends Component
     public function savePhotoFromModal($inventoryId)
     {
         $this->validate([
-            'modalPhoto.' . $inventoryId => 'required|image|max:2048',
-            'modalPhotoDescription.' . $inventoryId => 'nullable|string|max:255',
+            'modalPhoto.'.$inventoryId => 'required|image|max:2048',
+            'modalPhotoDescription.'.$inventoryId => 'nullable|string|max:255',
         ]);
         $path = $this->modalPhoto[$inventoryId]->store('inventory_photos', 'public');
         InventoryPhoto::create([
@@ -290,10 +313,10 @@ class Create extends Component
     public function updateUserModalList()
     {
         $query = User::where('status', true);
-        if (!empty($this->userModalFilter)) {
+        if (! empty($this->userModalFilter)) {
             $search = strtolower($this->userModalFilter);
-            $query->whereRaw('LOWER(name) LIKE ?', ['%' . $search . '%'])
-                  ->orWhereRaw('LOWER(email) LIKE ?', ['%' . $search . '%']);
+            $query->whereRaw('LOWER(name) LIKE ?', ['%'.$search.'%'])
+                ->orWhereRaw('LOWER(email) LIKE ?', ['%'.$search.'%']);
         }
         $this->userModalList = $query->orderBy('name')->limit(20)->get();
     }
@@ -327,7 +350,7 @@ class Create extends Component
             'codigo' => $this->codigo,
             'auditoria' => $this->auditoria,
         ]);
-        
+
         foreach ($this->selected_inventories as $inventory_id) {
             InventoryResponsiva::create([
                 'responsiva_id' => $responsiva->id,
@@ -335,15 +358,15 @@ class Create extends Component
                 'description' => $this->inventoryDescriptions[$inventory_id] ?? null,
             ]);
         }
-        
+
         session()->flash('message', 'Carta responsiva creada correctamente.');
         $this->reset(['user_id', 'responsable_id', 'informatica_id', 'fecha', 'codigo', 'auditoria', 'selected_inventories', 'inventoryDescriptions', 'selectedInventoryForPhotos', 'photo', 'photoDescription']);
-        
+
         return $this->redirectRoute('cartasresponsivas.index');
     }
 
     public function render()
     {
-        return view('livewire.cartasresponsivas.create');
+        return view('livewire.admin.cartasresponsivas.create');
     }
 }

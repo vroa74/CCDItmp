@@ -397,7 +397,7 @@ class Index extends Component
             'inactiveServices' => $services->where('status', false)->count(),
         ];
 
-        $pdf = Pdf::loadView('reports.services.general', $data);
+        $pdf = Pdf::loadView('reportesImpresos.services.general', $data);
         $filename = 'reporte_general_servicios_'.now()->format('Y-m-d_H-i-s').'.pdf';
 
         // Guardar temporalmente el PDF
@@ -420,7 +420,7 @@ class Index extends Component
             'totalServices' => $services->count(),
         ];
 
-        $pdf = Pdf::loadView('reports.services.by_user', $data);
+        $pdf = Pdf::loadView('reportesImpresos.services.by_user', $data);
         $filename = 'reporte_servicios_por_usuario_'.now()->format('Y-m-d_H-i-s').'.pdf';
 
         // Guardar temporalmente el PDF
@@ -451,7 +451,7 @@ class Index extends Component
             'totalServices' => $services->count(),
         ];
 
-        $pdf = Pdf::loadView('reports.services.by_type', $data);
+        $pdf = Pdf::loadView('reportesImpresos.services.by_type', $data);
         $filename = 'reporte_servicios_por_tipo_'.now()->format('Y-m-d_H-i-s').'.pdf';
 
         // Guardar temporalmente el PDF
@@ -477,7 +477,7 @@ class Index extends Component
             'totalServices' => $services->count(),
         ];
 
-        $pdf = Pdf::loadView('reports.services.by_date', $data);
+        $pdf = Pdf::loadView('reportesImpresos.services.by_date', $data);
         $filename = 'reporte_servicios_por_fecha_'.now()->format('Y-m-d_H-i-s').'.pdf';
 
         // Guardar temporalmente el PDF

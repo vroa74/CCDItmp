@@ -90,7 +90,7 @@ class ServiceController extends Controller
                 'generatedAt' => now()->format('d/m/Y H:i:s'),
             ];
 
-            $pdf = Pdf::loadView('reports.services.individual', $data)
+            $pdf = Pdf::loadView('reportesImpresos.services.individual', $data)
                 ->setPaper('letter', 'portrait');
 
             return $pdf->stream('reporte_servicio_'.preg_replace('/[^A-Za-z0-9_-]/', '_', $service->id_s).'.pdf');
@@ -112,7 +112,7 @@ class ServiceController extends Controller
                 'generatedAt' => now()->format('d/m/Y H:i:s'),
             ];
 
-            $pdf = Pdf::loadView('reports.services.individualcal', $data)
+            $pdf = Pdf::loadView('reportesImpresos.services.individualcal', $data)
                 ->setPaper('letter', 'portrait');
 
             return $pdf->stream('reporte_servicio_'.preg_replace('/[^A-Za-z0-9_-]/', '_', $service->id_s).'.pdf');
@@ -137,7 +137,7 @@ class ServiceController extends Controller
                 'generatedAt' => now()->format('d/m/Y H:i:s'),
             ];
 
-            $pdf = Pdf::loadView('reports.services.detalles', $data)
+            $pdf = Pdf::loadView('reportesImpresos.services.detalles', $data)
                 ->setPaper('letter', 'portrait');
 
             return $pdf->stream('detalles_servicio_'.preg_replace('/[^A-Za-z0-9_-]/', '_', $service->id_s).'.pdf');

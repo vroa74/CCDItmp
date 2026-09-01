@@ -5,6 +5,7 @@ namespace App\Livewire\Admin\Servicios;
 use App\Models\Service;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
@@ -729,8 +730,20 @@ class Index extends Component
     public function render()
     {
         // Forzar recarga completa de relaciones y datos
+        $authUser = Auth::user();
+
         $services = Service::query()
             ->with(['solicitante', 'efectuo', 'vobo', 'capturo', 'photos'])
+            ->when(in_array((int) $authUser->lvl, [4, 5]) && (int) $authUser->tipo === 3, function ($query) use ($authUser) {
+                // Los usuarios (tipo 3) de nivel 4 o 5 solo ven servicios de su propia dirección
+                $query->whereHas('solicitante', function ($q) use ($authUser) {
+                    $q->where('direction', $authUser->direction);
+                });
+            })
+            ->when((int) $authUser->lvl > 5 && (int) $authUser->tipo === 3, function ($query) use ($authUser) {
+                // Los usuarios (tipo 3) de nivel mayor a 5 solo ven sus propios servicios como solicitante
+                $query->where('solicitante_id', $authUser->id);
+            })
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('id_s', 'like', '%'.$this->search.'%')

@@ -141,23 +141,27 @@
                         Total de servicios
                     </span>
                     <div class="flex gap-1 w-full">
-                        <a href="{{ route('servicios.create') }}"
-                            class="flex-1 px-1 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center justify-center gap-1 transition-colors text-xs font-medium">
-                            <x-lucide name="plus" class="w-3 h-3" />
-                            Agregar
-                        </a>
-                        <button wire:click="openReportModal('general')"
-                            class="flex-1 px-1 py-1 bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center justify-center gap-1 transition-colors text-xs font-medium"
-                            title="Generar Reporte">
-                            <x-lucide name="file-text" class="w-3 h-3" />
-                            Reportes
-                        </button>
-                        <button wire:click="exportServices"
-                            class="flex-1 px-1 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded-lg flex items-center justify-center gap-1 transition-colors text-xs font-medium"
-                            title="Exportar Servicios">
-                            <x-lucide name="download" class="w-3 h-3" />
-                            Exportar
-                        </button>
+                        @if (auth()->user()->tipo !== 3)
+                            <a href="{{ route('servicios.create') }}"
+                                class="flex-1 px-1 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center justify-center gap-1 transition-colors text-xs font-medium">
+                                <x-lucide name="plus" class="w-3 h-3" />
+                                Agregar
+                            </a>
+                        @endif
+                        @if (auth()->user()->tipo !== 3)
+                            <button wire:click="openReportModal('general')"
+                                class="flex-1 px-1 py-1 bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center justify-center gap-1 transition-colors text-xs font-medium"
+                                title="Generar Reporte">
+                                <x-lucide name="file-text" class="w-3 h-3" />
+                                Reportes
+                            </button>
+                            <button wire:click="exportServices"
+                                class="flex-1 px-1 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded-lg flex items-center justify-center gap-1 transition-colors text-xs font-medium"
+                                title="Exportar Servicios">
+                                <x-lucide name="download" class="w-3 h-3" />
+                                Exportar
+                            </button>
+                        @endif
                         <button wire:click="toggleIdSorting"
                             class="flex-1 px-1 py-1 bg-orange-600 hover:bg-orange-700 text-white rounded-lg flex items-center justify-center gap-1 transition-colors text-xs font-medium"
                             title="Ordenar por ID (Toggle)">
@@ -371,6 +375,7 @@
                                         <x-lucide name="edit" class="w-4 h-4" />
                                     </button>
                                     {{-- Reportede Servicio Normal --}}
+                                    @if (auth()->user()->tipo !== 3)
                                     <button 
                                         wire:click="generateIndividualServiceReport({{ $service->id }})"
                                         class="text-orange-400 hover:text-red-500 transition-colors"
@@ -395,6 +400,7 @@
                                         title="Generar Reporte Detallado">
                                         <i class="ri-printer-line"></i>
                                     </button>
+                                    @endif
                                     @endif
                                 </div>
                             </td>

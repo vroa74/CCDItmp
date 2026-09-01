@@ -32,7 +32,7 @@ necesito que las vistas y los archivos de livewire y todo lo que esta vista nece
 
 revisa el proyecto ya que veo archivos que esta fuera de la carpeta /admin la cual es /reports no se qie contiene, se esta usado los archivos y para que
 
-
+bueno necesito saber si gan una forma de delimitar que se vean algunos botones de determinadas vista atavez de spatie como lo botones de impresion, algunas vista es pregunta no te pido que lo hagas
 
 
 

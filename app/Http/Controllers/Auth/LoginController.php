@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\Response;
 
 class LoginController extends Controller
 {
@@ -19,7 +23,7 @@ class LoginController extends Controller
     /**
      * Show the application's login form.
      *
-     * @return \Illuminate\View\View
+     * @return View
      */
     public function showLoginForm()
     {
@@ -29,14 +33,15 @@ class LoginController extends Controller
     /**
      * Handle a login request to the application.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public function login(Request $request)
     {
         $this->validateLogin($request);
+
+        $this->ensureUserIsActive($request);
 
         if ($this->attemptLogin($request)) {
             return $this->sendLoginResponse($request);
@@ -46,30 +51,48 @@ class LoginController extends Controller
     }
 
     /**
+     * Verificar que el usuario con las credenciales dadas no esté inactivo.
+     *
+     * @return void
+     *
+     * @throws ValidationException
+     */
+    protected function ensureUserIsActive(Request $request)
+    {
+        $user = User::where('email', $request->input('email'))
+            ->where('rfc', $request->input('rfc'))
+            ->first();
+
+        if ($user && ! $user->status) {
+            throw ValidationException::withMessages([
+                'email' => ['El usuario está inactivo. Contacte al administrador.'],
+            ]);
+        }
+    }
+
+    /**
      * Attempt to log the user into the application.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return bool
      */
     protected function attemptLogin(Request $request)
     {
         $credentials = $request->only('email', 'rfc', 'password');
-        
+
         // Verificar que tanto email como RFC coincidan
         return Auth::attempt([
             'email' => $credentials['email'],
             'rfc' => $credentials['rfc'],
-            'password' => $credentials['password']
+            'password' => $credentials['password'],
         ], $request->boolean('remember'));
     }
 
     /**
      * Get the failed login response instance.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     protected function sendFailedLoginResponse(Request $request)
     {
@@ -82,8 +105,7 @@ class LoginController extends Controller
     /**
      * Send the response after the user was authenticated.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     protected function sendLoginResponse(Request $request)
     {
@@ -95,10 +117,9 @@ class LoginController extends Controller
     /**
      * Validate the user login request.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return void
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     protected function validateLogin(Request $request)
     {
@@ -112,8 +133,7 @@ class LoginController extends Controller
     /**
      * Log the user out of the application.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function logout(Request $request)
     {
@@ -124,4 +144,4 @@ class LoginController extends Controller
 
         return redirect('/');
     }
-} 
+}

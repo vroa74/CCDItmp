@@ -41,19 +41,7 @@
 
         <div class="min-h-screen bg-gray-900">
             <div class="fixed top-0 left-0 right-0 z-50 h-16">
-                @switch(auth()->user()?->tipo)
-                    @case(1)
                         @livewire('navigation-menu-a')
-                        @break
-                    @case(2)
-                        @livewire('navigation-menu-t')
-                        @break
-                    @case(3)
-                        @livewire('navigation-menu-g')
-                        @break
-                    @default
-                        @livewire('navigation-menu-g')
-                @endswitch
             </div>
             <!-- Page Heading -->
             @if (isset($header))

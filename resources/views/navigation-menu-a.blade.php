@@ -8,7 +8,6 @@
                     <x-application-mark class="block h-9 w-auto" />
                 </a>
             </div>
-
             <!-- Navigation Links -->
             <div class="hidden flex-1 items-center justify-center sm:flex">
                 <div class="flex flex-wrap items-center justify-center gap-x-10 gap-y-2">
@@ -26,15 +25,22 @@
                     <x-nav-link class="px-2" href="{{ route('servicios.index') }}" :active="request()->routeIs('servicios.index')">
                         <i class="ri-service-fill"></i>  {{ __('Gestión de Servicios') }}
                     </x-nav-link>
+                    @if(auth()->user()->tipo == 1)
                     <x-nav-link class="px-2" href="{{ route('inventario.index') }}" :active="request()->routeIs('inventario.index')">
                         <i class="ri-list-settings-line"></i>  {{ __('Gestión de Inventarios') }}
                     </x-nav-link>
+                    @endif
+                    @if(auth()->user()->tipo == 1)
                     <x-nav-link class="px-2" href="{{ route('cartasresponsivas.index') }}" :active="request()->routeIs('cartasresponsivas.index')">
                         <i class="ri-list-settings-line"></i>  {{ __('Gestión de Cartas Responsivas') }}
                     </x-nav-link>
+                    @endif
+                    @if(auth()->user()->tipo == 1)
+
                     <x-nav-link class="px-2" href="{{ route('reportes.red') }}" :active="request()->routeIs('reportes.red')">
                         <i class="ri-wifi-fill"></i>  {{ __('Reportes de Red') }}
                     </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -174,15 +180,21 @@
             <x-responsive-nav-link href="{{ route('servicios.index') }}" :active="request()->routeIs('servicios.index')">
                 <i class="ri-service-fill"></i>  {{ __('Gestión de Servicios') }}
             </x-responsive-nav-link>
+            @if(auth()->user()->tipo == 1)
             <x-responsive-nav-link href="{{ route('inventario.index') }}" :active="request()->routeIs('inventario.index')">
                 <i class="ri-list-settings-line"></i>  {{ __('Gestión de Inventarios') }}
             </x-responsive-nav-link>
+            @endif
+            @if(auth()->user()->tipo == 1)
             <x-responsive-nav-link href="{{ route('cartasresponsivas.index') }}" :active="request()->routeIs('cartasresponsivas.index')">
                 <i class="ri-list-settings-line"></i>  {{ __('Gestión de Cartas Responsivas') }}
             </x-responsive-nav-link>
+            @endif
+            @if(auth()->user()->tipo == 1)
             <x-responsive-nav-link href="{{ route('reportes.red') }}" :active="request()->routeIs('reportes.red')">
                 <i class="ri-wifi-fill"></i>  {{ __('Reportes de Red') }}
             </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->

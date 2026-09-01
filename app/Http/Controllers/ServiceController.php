@@ -7,6 +7,7 @@ use App\Traits\DeviceDetectionTrait;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class ServiceController extends Controller
 {
@@ -18,7 +19,6 @@ class ServiceController extends Controller
     public function index()
     {
         $deviceInfo = $this->getDeviceInfo();
-
         return view('admin.servicios.index', $deviceInfo);
     }
 
@@ -53,13 +53,27 @@ class ServiceController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
+    // public function edit($id)
+    // {
+    //     $deviceInfo = $this->getDeviceInfo();
+    //     return view('admin.servicios.edit', array_merge(['id' => $id], $deviceInfo));
+    // }
     public function edit($id)
     {
+        // 1. Validar autenticación y rol/tipo de usuario
+        $user = Auth::user();
+
+        abort_unless(
+            $user && in_array((int)$user->tipo, [1, 2], true),
+            403,
+            'No tiene permisos suficientes para editar este servicio.'
+        );
+
+        // 2. Retornar vista si la validación pasa
         $deviceInfo = $this->getDeviceInfo();
 
         return view('admin.servicios.edit', array_merge(['id' => $id], $deviceInfo));
     }
-
     /**
      * Update the specified resource in storage.
      */

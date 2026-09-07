@@ -51,6 +51,10 @@ por favor crea el crud de la migracion
   crea sus propios controladores y la liga para el acceso pola en este crud de red y que este crud ESTE EN EL ELEMENTO PANEL DE REPORTES. TOMA EN CONSIDERACION LA LOGICA QUE UN REPORTE PUEDE TENER UNO O VARIOS SUBREPORTES QUE SON CONSIDERADOS SEGUIMIENTO DEL RESPORTE.
 
 
+  revisa los cruds de la migraciones
+  2026_08_06_173100_create_edificios_table,   2026_08_06_173126_create_reportes_incidentes_table y   2026_08_06_173129_create_seguimiento_subreportes_table  y realiza los combios pertinente para que todos los valores de los campos sean aplicados en los crud's
+
+
 
 
 

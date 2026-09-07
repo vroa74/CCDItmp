@@ -17,7 +17,10 @@ class SeguimientoSubreporteController extends Controller
 
     public function store(Request $request, ReporteIncidente $reporte): RedirectResponse
     {
-        $reporte->seguimientos()->create($this->validated($request));
+        $reporte->seguimientos()->create([
+            ...$this->validated($request),
+            'user_id' => $request->user()?->id,
+        ]);
 
         return redirect()->route('reportes-incidentes.show', $reporte)->with('message', 'Seguimiento agregado correctamente.');
     }

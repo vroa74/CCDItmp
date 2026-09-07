@@ -19,6 +19,7 @@ class ReporteIncidente extends Model
         'user_id',
         'folio_ticket_proveedor',
         'tipo_falla',
+        'nombre_tecnico_proveedor',
         'descripcion_problema',
         'prioridad',
         'estatus',

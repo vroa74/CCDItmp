@@ -70,7 +70,7 @@ class LineaInternetController extends Controller
     {
         return $request->validate([
             'id_edificio' => ['required', 'integer', Rule::exists('edificios', 'id_edificio')],
-            'proveedor' => ['required', Rule::in(['Telmex', 'Izzi', 'Otro'])],
+            'proveedor' => ['required', Rule::in(['Telmex', 'Izzi', 'MegaCable', 'totalPal', 'Starlink', 'Cable', 'Sky', 'Otros'])],
             'numero_contrato' => ['required', 'string', 'max:50'],
             'numero_telefono' => ['nullable', 'string', 'max:20'],
             'ubicacion_especifica' => ['nullable', 'string', 'max:150'],

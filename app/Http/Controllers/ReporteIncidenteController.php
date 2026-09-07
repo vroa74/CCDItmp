@@ -40,7 +40,10 @@ class ReporteIncidenteController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $reporte = ReporteIncidente::create($this->validated($request));
+        $reporte = ReporteIncidente::create([
+            ...$this->validated($request),
+            'user_id' => $request->user()?->id,
+        ]);
 
         return redirect()->route('reportes-incidentes.show', $reporte)->with('message', 'Reporte de incidente creado correctamente.');
     }
@@ -79,7 +82,8 @@ class ReporteIncidenteController extends Controller
         return $request->validate([
             'id_linea' => ['required', 'integer', 'exists:lineas_internet,id_linea'],
             'folio_ticket_proveedor' => ['nullable', 'string', 'max:50'],
-            'tipo_falla' => ['required', 'in:Sin_servicio,Intermitencia,Lentitud,Falla_hardware,Otro'],
+            'tipo_falla' => ['required', 'in:Sin_servicio,Intermitencia,Lentitud,Falla_hardware,Desconexiones,LOS (falla de fibraoptica),Otro'],
+            'nombre_tecnico_proveedor' => ['nullable', 'string', 'max:100'],
             'descripcion_problema' => ['required', 'string'],
             'prioridad' => ['required', 'in:Baja,Media,Alta,Critica'],
             'estatus' => ['required', 'in:Abierto,En_proceso,Escalado,Resuelto,Cerrado'],

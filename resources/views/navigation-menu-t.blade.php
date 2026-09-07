@@ -32,9 +32,19 @@
                     <x-nav-link class="px-2" href="{{ route('cartasresponsivas.index') }}" :active="request()->routeIs('cartasresponsivas.index')">
                         <i class="ri-list-settings-line"></i>  {{ __('Gestión de Cartas Responsivas') }}
                     </x-nav-link>
-                    <x-nav-link class="px-2" href="{{ route('reportes.red') }}" :active="request()->routeIs('reportes.red')">
-                        <i class="ri-wifi-fill"></i>  {{ __('Reportes de Red') }}
-                    </x-nav-link>
+                    <x-dropdown align="left" width="48">
+                        <x-slot name="trigger">
+                            <button type="button" class="inline-flex items-center gap-1 px-2 text-sm font-medium text-gray-300 hover:text-white">
+                                <i class="ri-wifi-fill"></i> {{ __('Reportes de Red') }}
+                                <i class="ri-arrow-down-s-line"></i>
+                            </button>
+                        </x-slot>
+                        <x-slot name="content">
+                            <x-dropdown-link href="{{ route('reportes-incidentes.index') }}">Reportes de incidentes</x-dropdown-link>
+                            <x-dropdown-link href="{{ route('edificios.index') }}">Edificios</x-dropdown-link>
+                            <x-dropdown-link href="{{ route('lineas-internet.index') }}">Líneas de Internet</x-dropdown-link>
+                        </x-slot>
+                    </x-dropdown>
                 </div>
             </div>
 
@@ -180,7 +190,7 @@
             <x-responsive-nav-link href="{{ route('cartasresponsivas.index') }}" :active="request()->routeIs('cartasresponsivas.index')">
                 <i class="ri-list-settings-line"></i>  {{ __('Gestión de Cartas Responsivas') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link href="{{ route('reportes.red') }}" :active="request()->routeIs('reportes.red')">
+            <x-responsive-nav-link href="{{ route('reportes-incidentes.index') }}" :active="request()->routeIs('reportes-incidentes.*')">
                 <i class="ri-wifi-fill"></i>  {{ __('Reportes de Red') }}
             </x-responsive-nav-link>
         </div>

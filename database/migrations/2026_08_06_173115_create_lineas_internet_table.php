@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('lineas_internet', function (Blueprint $table) {
             $table->increments('id_linea');
             $table->unsignedInteger('id_edificio');
-            $table->enum('proveedor', ['Telmex', 'Izzi', 'Otro']);
+            $table->enum('proveedor', ['Telmex', 'Izzi', 'MegaCable', 'totalPal', 'Starlink', 'Cable',  'Sky', 'Otros']);
             $table->string('numero_contrato', 50);
             $table->string('numero_telefono', 20)->nullable();
             $table->string('ubicacion_especifica', 150)->nullable();

@@ -1,0 +1,1 @@
+<x-app-layout><x-slot name="header"><h2 class="font-semibold text-xl text-gray-100">Nuevo reporte de incidente</h2></x-slot><div class="py-6"><div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">@include('admin.reportes-incidentes.form', ['action' => route('reportes-incidentes.store'), 'method' => 'POST', 'title' => 'Nuevo reporte de incidente'])</div></div></x-app-layout>

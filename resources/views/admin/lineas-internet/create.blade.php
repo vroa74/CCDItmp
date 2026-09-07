@@ -1,0 +1,1 @@
+<x-app-layout><x-slot name="header"><h2 class="font-semibold text-xl text-gray-100">Nueva línea de internet</h2></x-slot><div class="py-6"><div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">@include('admin.lineas-internet.form', ['action' => route('lineas-internet.store'), 'method' => 'POST', 'title' => 'Nueva línea de internet'])</div></div></x-app-layout>

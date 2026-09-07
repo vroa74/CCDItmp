@@ -5,7 +5,11 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CartasCesponsivasController;
 use App\Http\Controllers\CartasResponsivaController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EdificioController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\LineaInternetController;
+use App\Http\Controllers\ReporteIncidenteController;
+use App\Http\Controllers\SeguimientoSubreporteController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UsuariosController;
 use Illuminate\Support\Facades\Route;
@@ -103,7 +107,22 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     // REPORTES DE RED Y REPORTES GENERALES
     // ========================================================================
 
-    Route::view('/reportes-red', 'reportes.red.index')->name('reportes.red');
+    Route::resource('edificios', EdificioController::class)
+        ->except(['show'])
+        ->names('edificios');
+    Route::resource('lineas-internet', LineaInternetController::class)
+        ->except(['show'])
+        ->names('lineas-internet');
+    Route::resource('reportes-red', ReporteIncidenteController::class)
+        ->parameters(['reportes-red' => 'reporte'])
+        ->names('reportes-incidentes');
+    Route::prefix('reportes-red/{reporte}/seguimientos')->name('reportes-incidentes.seguimientos.')->group(function () {
+        Route::get('create', [SeguimientoSubreporteController::class, 'create'])->name('create');
+        Route::post('/', [SeguimientoSubreporteController::class, 'store'])->name('store');
+        Route::get('{seguimiento}/edit', [SeguimientoSubreporteController::class, 'edit'])->name('edit');
+        Route::put('{seguimiento}', [SeguimientoSubreporteController::class, 'update'])->name('update');
+        Route::delete('{seguimiento}', [SeguimientoSubreporteController::class, 'destroy'])->name('destroy');
+    });
 
     // Módulo Reportes Segmentado
     Route::get('/reportes', function () {

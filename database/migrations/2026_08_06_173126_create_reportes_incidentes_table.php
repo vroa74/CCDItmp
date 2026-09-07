@@ -16,7 +16,8 @@ return new class extends Migration
             $table->unsignedInteger('id_linea');
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('folio_ticket_proveedor', 50)->nullable();
-            $table->enum('tipo_falla', ['Sin_servicio', 'Intermitencia', 'Lentitud', 'Falla_hardware', 'Otro']);
+            $table->enum('tipo_falla', ['Sin_servicio', 'Intermitencia', 'Lentitud', 'Falla_hardware', 'Desconexiones', 'LOS (falla de fibraoptica)','Otro']);
+            $table->string('nombre_tecnico_proveedor', 100)->nullable();
             $table->text('descripcion_problema');
             $table->enum('prioridad', ['Baja', 'Media', 'Alta', 'Critica'])->default('Media');
             $table->enum('estatus', ['Abierto', 'En_proceso', 'Escalado', 'Resuelto', 'Cerrado'])->default('Abierto');
